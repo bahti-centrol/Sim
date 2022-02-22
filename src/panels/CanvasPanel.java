@@ -1,51 +1,156 @@
 package panels;
 
+import routes.Direction;
+import routes.Path;
+import routes.Route;
+
+import routes.Point;
+import utils.Bikes;
+import utils.Customer;
+import utils.Settings;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CanvasPanel extends JPanel {
+import static utils.Commons.getImage;
+import static utils.Commons.scaleImage;
 
-    private Image image = null;
-    private int iWidth2;
-    private int iHeight2;
+public class CanvasPanel extends JPanel implements ComponentListener {
+
+    private Image original;
+    private Image image;
+
+
+    private Image test;
+    private Image test2;
+
+
+    private Point originalSize;
+    private Point currentSize;
+
+    private int width;
+    private int height;
 
     public CanvasPanel()
     {
+        addComponentListener(this);
+
+
+        this.test = getImage("adjusted.png");
+        this.original = getImage("background.png");
+        this.originalSize = new Point(this.original.getWidth(this), this.original.getHeight(this));
     }
 
-    private BufferedImage getScaledImage(Image srcImg, int w, int h){
+    private Color colors[] = {Color.RED, Color.BLUE, Color.MAGENTA, Color.YELLOW};
 
-        //Create a new image with good size that contains or might contain arbitrary alpha values between and including 0.0 and 1.0.
-        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TRANSLUCENT);
-
-        Graphics2D g2 = resizedImg.createGraphics();
-
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-
-        g2.drawImage(srcImg, 0, 0, w, h, null);
-
-        g2.dispose();
-
-        return resizedImg;
-    }
-
-    public void setImage(Image image, int w, int h) {
-        this.image = getScaledImage(image, w, h);
-        this.iWidth2 = image.getWidth(this)/2;
-        this.iHeight2 = image.getHeight(this)/2;
-    }
-
-    public void paintComponent(Graphics g)
-    {
+    public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (image != null)
-        {
-            //int x = this.getParent().getWidth()/2 - iWidth2;
-            //int y = this.getParent().getHeight()/2 - iHeight2;
+
+        if (image != null) {
             g.drawImage(image,0,0,this);
+
+            //g.drawImage(test2, 0, 0, this);
+
+            if (this.customers != null ) {
+
+                for (Customer customer : customers) {
+
+                    if (customer.failed()){
+                        continue;
+                    }
+
+
+                    Route route = customer.getRoute();
+
+                    int intervals = customer.getDuration();
+                    int current = Settings.EVENT_COUNTER - customer.getStarted();
+
+                    Path path = route.getPath(current, intervals);
+                    Point point = route.getPoint(current, intervals);
+                    Point adjusted = point.scale(originalSize, currentSize);
+
+                    Image bike = Bikes.imgs[customer.getCompany()][path.getOrientation()];
+
+                    g.drawImage(
+                            bike,
+                            adjusted.getX() - 10 - bike.getWidth(this)/2,
+                            adjusted.getY() - 10 - bike.getHeight(this)/2,
+                            this
+                    );
+                }
+
+            }
         }
     }
 
+    private void debug(Graphics g) {
 
+        int i = 0;
+        for (Route route : Direction.ROUTES) {
+
+            g.setColor(colors[i/2]);
+            for (Path path : route.getPaths()) {
+
+                Point start = path.getStart().scale(originalSize, currentSize);
+                Point end = path.getEnd().scale(originalSize, currentSize);
+
+                g.drawLine(start.getX(), start.getY(), end.getX(), end.getY());
+
+            }
+
+            g.setColor(Color.BLACK);
+            for (int j = 0; j <= route.getExpected(); j++) {
+
+                Point point = route.getPoint(j, route.getExpected());
+
+                Point adjusted = point.scale(originalSize, currentSize);
+
+                g.fillRect(adjusted.getX() - 5, adjusted.getY() - 5, 10, 10);
+            }
+
+            i++;
+        }
+
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        this.width = e.getComponent().getWidth();
+        this.height = e.getComponent().getHeight();
+        this.currentSize = new Point(width, height);
+
+        Bikes.refresh(width, height);
+
+        this.image = scaleImage(original, width, height);
+        this.test2 = scaleImage(test, 30, 30);
+        this.repaint();
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+        System.out.println(e);
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+        System.out.println(e);
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+        System.out.println(e);
+
+    }
+
+    private List<Customer> customers;
+
+    public void refresh(List<Customer> customers) {
+        this.customers = customers;
+        this.repaint();
+    }
 }

@@ -2,6 +2,9 @@ package utils;
 
 public class Chance {
 
+    public static int zeroOrOne() {
+        return flip() ? 1 : 0;
+    }
 
     public static boolean flip() {
         return chance(0.5);

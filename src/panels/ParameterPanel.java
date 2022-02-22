@@ -1,5 +1,6 @@
 package panels;
 
+import main.SimGui;
 import net.miginfocom.swing.MigLayout;
 import main.Core;
 import utils.Settings;
@@ -42,17 +43,21 @@ public class ParameterPanel extends JPanel implements ActionListener, FocusListe
     private JTextField stonyBrookRateField;
     private JSlider stonyBrookRateSlider;
 
-    private JCheckBox checkBox;
+    private JCheckBox renderBox;
+    private JCheckBox consoleBox;
 
     private JButton primaryButton;
     private JButton secondaryButton;
 
     private Core core;
 
-    public ParameterPanel(Core core) {
+    private SimGui simGui;
+
+    public ParameterPanel(Core core, SimGui simGui) {
         super(new MigLayout("ins 5"));
 
         this.core = core;
+        this.simGui = simGui;
 
         add(getSimulationParameterPanel(), "span, pushx, growx");
         insertLine();
@@ -100,14 +105,21 @@ public class ParameterPanel extends JPanel implements ActionListener, FocusListe
 
         JPanel panel = new JPanel(new MigLayout(""));
 
-        checkBox = new JCheckBox();
-        checkBox.setFont(mediumFont);
-        checkBox.setSelected(true);
-        checkBox.addActionListener(this);
+        renderBox = new JCheckBox();
+        renderBox.setFont(mediumFont);
+        renderBox.setSelected(true);
+        renderBox.addActionListener(this);
+
+        consoleBox = new JCheckBox();
+        consoleBox.setFont(mediumFont);
+        consoleBox.setSelected(false);
+        consoleBox.addActionListener(this);
 
         panel.add(getLargeLabel("Advanced Settings:"), "span, left, gapbottom 10");
         panel.add(getMediumLabel("Render Simulation: "), "cell 0 1, width 35");
-        panel.add(checkBox, "cell 1 1, gapright 5");
+        panel.add(renderBox, "cell 1 1, gapright 5");
+        panel.add(getMediumLabel("Show Console: "), "cell 0 2, width 35");
+        panel.add(consoleBox, "cell 1 2, gapright 5");
 
         return panel;
     }
@@ -253,6 +265,11 @@ public class ParameterPanel extends JPanel implements ActionListener, FocusListe
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JButton) {
             this.core.onButton((JButton)e.getSource());
+        }
+
+        if (e.getSource() instanceof JCheckBox) {
+            JCheckBox box = (JCheckBox) e.getSource();
+            this.simGui.swap(box.isSelected());
         }
     }
 

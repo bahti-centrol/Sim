@@ -27,7 +27,6 @@ public class Settings {
     public static int COMP_Y_INITIAL = 160;
     public static double COMP_Y_QUALITY = 0.60;
 
-
     public static double MANHATTAN_SPAWN_RATE = 0.35;
     public static double QUEENS_SPAWN_RATE = 0.30;
     public static double JONES_BEACH_SPAWN_RATE = 0.20;

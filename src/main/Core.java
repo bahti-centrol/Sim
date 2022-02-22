@@ -1,6 +1,8 @@
 package main;
 
+import panels.CanvasPanel;
 import panels.GraphPanel;
+import panels.StockPanel;
 import utils.Console;
 import utils.Customer;
 import utils.Settings;
@@ -9,7 +11,10 @@ import javax.swing.*;
 
 public class Core {
 
-    private GraphPanel graphPanel;
+    private GraphPanel graph;
+    private StockPanel stock;
+
+    private CanvasPanel canvas;
 
     public enum CoreState {
         INIT, RUNNING, PAUSED
@@ -81,7 +86,9 @@ public class Core {
 
     /* DO NOT DO ANY COMPUTATION IN HERE */
     private void postEvent() {
-        this.graphPanel.refresh();
+        this.graph.refresh();
+        this.stock.refresh(this.data.getStocks());
+        this.canvas.refresh(this.data.getCustomers());
     }
 
     private void completed() {
@@ -99,7 +106,7 @@ public class Core {
     private void restart() {
         Console.print("The simulation has been restarted.");
 
-        this.graphPanel.reset();
+        this.graph.reset();
         this.reset();
     }
 
@@ -116,7 +123,7 @@ public class Core {
 
         this.state = CoreState.RUNNING;
         this.data = new Data();
-        this.graphPanel.reset();
+        this.graph.reset();
         Settings.initialize();
 
         Console.print("TPS is ", Settings.TPS, " and delay is ", Settings.DELAY, " ms");
@@ -155,7 +162,15 @@ public class Core {
     }
 
     public void setGraph(GraphPanel graphPanel) {
-        this.graphPanel = graphPanel;
+        this.graph = graphPanel;
+    }
+
+    public void attachCanvas(CanvasPanel canvas) {
+        this.canvas = canvas;
+    }
+
+    public void attachStock(StockPanel stock) {
+        this.stock = stock;
     }
 
     public void setButtons(JButton primary, JButton secondary) {

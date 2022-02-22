@@ -1,7 +1,6 @@
 package panels;
 
 import org.knowm.xchart.*;
-import org.knowm.xchart.style.Styler;
 import utils.Settings;
 
 import javax.swing.*;
@@ -16,8 +15,11 @@ public class GraphPanel extends JPanel {
     private XYChart chart;
     private XChartPanel panel;
 
-    private List<Double> xPoints;
-    private List<Double> yPoints;
+    private List<Double> comp_X_xPoints;
+    private List<Double> comp_X_yPoints;
+
+    private List<Double> comp_Y_xPoints;
+    private List<Double> comp_Y_yPoints;
 
     private List<Double> middle;
 
@@ -26,17 +28,23 @@ public class GraphPanel extends JPanel {
 
     public GraphPanel() {
         super();
-        xPoints = new ArrayList<>();
-        yPoints = new ArrayList<>();
+        comp_X_xPoints = new ArrayList<>();
+        comp_X_yPoints = new ArrayList<>();
+
+        comp_Y_xPoints = new ArrayList<>();
+        comp_Y_yPoints = new ArrayList<>();
         middle = new ArrayList<>();
     }
 
     public void insert(double x, double y) {
-        xPoints.add(x);
-        yPoints.add(y);
+        comp_X_xPoints.add(x);
+        comp_X_yPoints.add(y);
+
+        comp_Y_yPoints.add(1.0-y);
+
         middle.add(0.5);
-        chart.updateXYSeries("default", xPoints, middle, null);
-        chart.updateXYSeries("pref", xPoints, yPoints, null);
+        chart.updateXYSeries("comp_x", comp_X_xPoints, comp_X_yPoints, null);
+        chart.updateXYSeries("comp_y", comp_X_xPoints, comp_Y_yPoints, null);
         panel.repaint();
     }
 
@@ -49,12 +57,14 @@ public class GraphPanel extends JPanel {
     }
 
     public void reset() {
-        xPoints = new ArrayList<>();
-        yPoints = new ArrayList<>();
+        comp_X_xPoints = new ArrayList<>();
+        comp_X_yPoints = new ArrayList<>();
+        comp_Y_xPoints = new ArrayList<>();
+        comp_Y_yPoints = new ArrayList<>();
         middle = new ArrayList<>();
         chart.getStyler().setXAxisMax(Settings.NUM_OF_DAYS*1.0);
-        chart.updateXYSeries("default", xPoints, middle, null);
-        chart.updateXYSeries("pref", xPoints, yPoints, null);
+        chart.updateXYSeries("comp_x", comp_X_xPoints, comp_X_yPoints, null);
+        chart.updateXYSeries("comp_y", comp_X_xPoints, comp_Y_yPoints, null);
         panel.repaint();
     }
 
@@ -69,10 +79,10 @@ public class GraphPanel extends JPanel {
         chart.getStyler().setXAxisMin(0.0);
         chart.getStyler().setXAxisMax(Settings.NUM_OF_DAYS*1.0);
         chart.getStyler().setMarkerSize(4);
-        chart.getStyler().setSeriesColors(new Color[]{Color.RED, Color.BLUE});
+        chart.getStyler().setSeriesColors(new Color[]{Color.BLUE, Color.RED});
         chart.getStyler().setChartBackgroundColor(new Color(244, 242, 232));
-        chart.addSeries("default", new double[] {0}, new double[] {0.5});
-        chart.addSeries("pref", new double[] {0}, new double[] {0.5});
+        chart.addSeries("comp_x", new double[] {0}, new double[] {0.5});
+        chart.addSeries("comp_y", new double[] {0}, new double[] {0.5});
 
         return chart;
     }

@@ -1,9 +1,6 @@
 package main;
 
-import panels.CanvasPanel;
-import panels.ConsolePanel;
-import panels.GraphPanel;
-import panels.ParameterPanel;
+import panels.*;
 import utils.Console;
 import main.Core;
 
@@ -16,15 +13,18 @@ import java.io.File;
 public class SimGui {
 
     private static final String TITLE = "Scooter Share Simulator";
-    private static final int WIDTH = 1350;
-    private static final int HEIGHT = 900;
+    private static final int WIDTH = 1550;
+    private static final int HEIGHT = 1000;
 
-    private JFrame frame;
+    public JFrame frame;
 
     private final CanvasPanel canvasPanel;
     private final GraphPanel graphPanel;
+    private final StockPanel stockPanel;
     private final JPanel consolePanel;
     private final JPanel parametersPanel;
+
+    private final JSplitPane bottomPane;
 
     private final Core core;
 
@@ -39,14 +39,17 @@ public class SimGui {
 
         canvasPanel = new CanvasPanel();
         graphPanel = new GraphPanel();
-        consolePanel = new ConsolePanel();
-        parametersPanel = new ParameterPanel(core);
+        stockPanel = new StockPanel();
+        consolePanel = new ConsolePanel(this);
+        parametersPanel = new ParameterPanel(core, this);
 
+        core.attachCanvas(canvasPanel);
         core.setGraph(graphPanel);
+        core.attachStock(stockPanel);
 
         Console.print("Initializing components and panes...");
 
-        JSplitPane bottomPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphPanel, consolePanel);
+        bottomPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, graphPanel, stockPanel);
         bottomPane.setOneTouchExpandable(false);
         bottomPane.setDividerLocation((int)(WIDTH*0.4));
 
@@ -56,13 +59,13 @@ public class SimGui {
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPane, parametersPanel);
         splitPane.setOneTouchExpandable(false);
-        splitPane.setResizeWeight(1.0);
+        splitPane.setResizeWeight(0.8);
 
         frame.getContentPane().add(splitPane);
         frame.pack();
 
-        graphPanel.createDefaultChart(bottomPane.getLeftComponent().getWidth(), bottomPane.getLeftComponent().getHeight());
-        canvasPanel.setImage(getImage(), leftPane.getLeftComponent().getWidth(), leftPane.getLeftComponent().getHeight());
+        graphPanel.createDefaultChart(graphPanel.getWidth(), graphPanel.getHeight());
+        stockPanel.createDefaultChart(stockPanel.getWidth(), stockPanel.getHeight());
 
         frame.repaint();
         frame.setLocationRelativeTo(null);
@@ -71,16 +74,14 @@ public class SimGui {
         Console.print("Simulation is ready to start");
     }
 
-    private Image getImage(){
-        BufferedImage img = null;
-        try {
-            img = ImageIO.read(new File("background.png"));
-            return img;
-
-        }catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    public void swap(boolean isConsole) {
+        if (isConsole) {
+            this.bottomPane.setRightComponent(this.consolePanel);
+        }else{
+            this.bottomPane.setRightComponent(this.stockPanel);
         }
+
+        this.bottomPane.repaint();
     }
 
 }
