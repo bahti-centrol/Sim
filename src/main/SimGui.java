@@ -26,7 +26,7 @@ public class SimGui {
 
     private final JSplitPane bottomPane;
 
-    private final Core core;
+    public final Core core;
 
     public SimGui(Core core) {
         this.core = core;

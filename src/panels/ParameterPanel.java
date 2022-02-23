@@ -172,7 +172,7 @@ public class ParameterPanel extends JPanel implements ActionListener, FocusListe
         compYQualityField = getTextField(Settings.COMP_Y_QUALITY);
         compYQualitySlider = getSlider(0, 100, (int)(Settings.COMP_Y_QUALITY*100));
 
-        panel.add(getLargeLabel("Scooter Company Y:"), "span, left, gapbottom 10");
+        panel.add(getLargeLabel("Scooter Company Red:"), "span, left, gapbottom 10");
 
         panel.add(getMediumLabel("Scooters:"), "cell 0 1, gapright 5, gapbottom 10");
         panel.add(compYScootersField, "cell 1 1, width 35");
@@ -194,7 +194,7 @@ public class ParameterPanel extends JPanel implements ActionListener, FocusListe
         compXQualityField = getTextField(Settings.COMP_X_QUALITY);
         compXQualitySlider = getSlider(0, 100, (int)(Settings.COMP_X_QUALITY*100));
 
-        panel.add(getLargeLabel("Scooter Company X:"), "span, left, gapbottom 10");
+        panel.add(getLargeLabel("Scooter Company Blue:"), "span, left, gapbottom 10");
 
         panel.add(getMediumLabel("Scooters:"), "cell 0 1, gapright 5, gapbottom 10");
         panel.add(compXScootersField, "cell 1 1, width 35");

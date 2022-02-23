@@ -6,6 +6,8 @@ public class Settings {
     public static int SECS_PER_DAY = 5;
     public static int TICKS_PER_HOUR = 12;
 
+    public static int EVENTS_PER_DAY = 144;
+
     public static double TPS = 0;
     public static int DELAY = 0;
 
@@ -33,10 +35,11 @@ public class Settings {
     public static double STONY_BROOK_SPAWN_RATE = 0.15;
 
     public static void initialize() {
-        TPS = (TICKS_PER_HOUR * 12) / (SECS_PER_DAY * 1.0);
+        EVENTS_PER_DAY = TICKS_PER_HOUR * 12;
+        TPS = EVENTS_PER_DAY / (SECS_PER_DAY * 1.0);
         DELAY = (int)(1000 / TPS);
 
-        MAX_EVENTS = TICKS_PER_HOUR * 12 * NUM_OF_DAYS;
+        MAX_EVENTS = EVENTS_PER_DAY * NUM_OF_DAYS;
         EVENT_COUNTER = 0;
 
         PREFERENCE = 0.5;

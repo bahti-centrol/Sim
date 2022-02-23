@@ -25,7 +25,7 @@ public class Core {
     private CoreState state;
     private Thread gameThread;
 
-    private Data data;
+    public Data data;
 
     public Core() {
         this.state = CoreState.INIT;
@@ -107,6 +107,7 @@ public class Core {
         Console.print("The simulation has been restarted.");
 
         this.graph.reset();
+        this.stock.reset(new Data().getStocks());
         this.reset();
     }
 

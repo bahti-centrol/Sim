@@ -78,6 +78,7 @@ public class Customer {
         if (chance(1.0-quality)) {
             Console.print("C",id,"'s scooter is expected to break down");
 
+            this.breakdown = true;
             this.brokeTime = random(1, this.duration) + Settings.EVENT_COUNTER;
             Console.print("c",id," time ",brokeTime);
         }
@@ -85,7 +86,8 @@ public class Customer {
     }
 
     public boolean completed() {
-        return this.fail || Settings.EVENT_COUNTER >= this.brokeTime || Settings.EVENT_COUNTER >= this.started + this.duration;
+        return this.fail || (this.breakdown && Settings.EVENT_COUNTER >= this.brokeTime)
+                         || Settings.EVENT_COUNTER >= this.started + this.duration;
     }
 
     public boolean failed(){
@@ -101,7 +103,9 @@ public class Customer {
     }
 
     public String csv() {
+
         StringBuilder builder = new StringBuilder();
+
         builder.append(id).append(',').append(initialPref).append(',').append(score).append(',').append(company)
                 .append(',').append(route.getStart()).append(',').append(route.getEnd()).append(',')
                 .append(started).append(',').append(started+duration).append(',').append(this.fail).append(',')
